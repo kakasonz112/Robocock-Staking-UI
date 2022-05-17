@@ -9,8 +9,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
-    "@solana/wallet-adapter-base": "^0.6.0",
-    "@solana/wallet-adapter-wallets": "^0.10.1",
+    "@solana/wallet-adapter-base": "^0.9.5",
+    "@solana/wallet-adapter-wallets": "^0.16.0",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "@tsconfig/svelte": "^2.0.1",
     "@types/canvas-confetti": "^1.4.2",
@@ -26,12 +26,15 @@
   "dependencies": {
     "@metaplex/js": "^4.10.1",
     "@project-serum/anchor": "^0.19.1-beta.1",
-    "@solana/wallet-adapter-react": "^0.15.3",
-    "@solana/web3.js": "^1.31.0",
+    "@solana/wallet-adapter-react": "^0.15.4",
+    "@solana/wallet-adapter-react-ui": "^0.9.6",
+    "@solana/web3.js": "^1.41.4",
+    "@types/jquery": "^3.5.14",
     "canvas-confetti": "^1.4.0",
     "dayjs": "^1.10.7",
     "install": "^0.13.0",
     "npm": "^8.3.2",
+    "react": "^18.1.0",
     "svelte-countdown": "^1.0.0"
   }
 }

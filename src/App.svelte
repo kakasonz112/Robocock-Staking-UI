@@ -3,30 +3,26 @@
   import { Connection } from "@solana/web3.js";
   import { Provider, web3 } from "@project-serum/anchor";
   import { fade } from "svelte/transition";
-  import Button from "./components/Button.svelte";
   import Header from "./components/CardHeader.svelte";
   import { LAMPORTS_PER_SOL } from "@solana/web3.js";
   import Tabs from "./components/Tabs.svelte";
-
-  import { candyMachineState, userState } from "./lib/store";
-  import {
-    getCandyMachineState,
-    checkWalletConnected,
-    getUserBalance,
-    existsOwnerSPLToken,
-  } from "./lib/state-helpers";
-
-
+  import Tabs_g1 from "./components/Tabs-Gen1.svelte";
+  import Tabs_g2 from "./components/Tabs-Gen2.svelte";
 
   // List of tab items with labels and values.
   let tabItems = [
-    { label: "Your COCKS", value: 1 },
-    { label: "Staked COCKS", value: 2 },
-    { label: "Your Rewards", value: 3 }
+    { label: "Gen 1", value: 1 },
+    { label: "Gen 2", value: 2 }
   ];
+
+  let tabItems_g = [
+    { label: "UnStaked", value: 1 },
+    { label: "Staked", value: 2 }
+];
 
 // Current active tab
 let currentTab;
+let currentTab_g;
 
   /***********************************/
   // Customise the app by changing the following variables.
@@ -38,109 +34,14 @@ let currentTab;
   const IMAGE_LINK = "";
   /***********************************/
 
-  let { solana } = window as any;
-  const rpcUrl = import.meta.env.VITE_APP_SOLANA_RPC_HOST?.toString();
-  const cluster = import.meta.env.VITE_APP_SOLANA_NETWORK?.toString();
-  const candyMachineId = import.meta.env.VITE_APP_CANDY_MACHINE_ID?.toString();
-  const opts = { preflightCommitment: "processed" };
-
-  let siteLoading = true;
-  let errorOcurred = false;
-  let connection: Connection;
-  let provider: Provider;
-  let candyMachinePublicKey: web3.PublicKey;
-
-  $: itemsRedeemed = $candyMachineState?.state.itemsRedeemed;
-  $: itemsAvailable = $candyMachineState?.state.itemsAvailable;
-  $: date = new Date($candyMachineState?.state.goLiveDate?.toNumber() * 1000);
-  $: price = $candyMachineState?.state.price;
-
-  function checkEnvironmentVariables() {
-    // Check if populated
-    if (!rpcUrl || !candyMachineId || !cluster) {
-      if (!rpcUrl) {
-        console.error("RPC URL not populated");
-      }
-      if (!candyMachineId) {
-        console.error("Candy Machine ID not populated");
-      }
-      if (!cluster) {
-        console.error("Environment not populated");
-      }
-      return true;
-    }
-    if (candyMachineId.length < 32 || candyMachineId.length > 44) {
-      console.error(
-        "Candy Machine Public Key is invalid. Enter a length in-between 32 and 44 characters"
-      );
-      return true;
-    }
-    return false;
-  }
 
   onMount(async () => {
-    solana = (window as any).solana;
-    // Check if environement variables are populated
-    // errorOcurred = checkEnvironmentVariables();
-    // if (errorOcurred) {
-    //  return;
-    // }
-
-    // If env variables populated, create provider, PK and connection
-    connection = new Connection(rpcUrl);
-    provider = new Provider(
-      connection,
-      solana,
-      opts.preflightCommitment as web3.ConfirmOptions
-    );
-    candyMachinePublicKey = new web3.PublicKey(candyMachineId);
-
-    // Get candy machine state
-    $candyMachineState = await getCandyMachineState(
-      candyMachinePublicKey,
-      provider
-    );
-    // Establish connection to wallet
-    if (solana?.isPhantom) {
-      $userState.walletPublicKey = await checkWalletConnected(solana);
-      if ($userState.walletPublicKey) {
-        // Get User Balance
-        $userState.userBalance = await getUserBalance(
-          $userState.walletPublicKey,
-          connection
-        );
-        // If whitelist config populated, check if user is whitelisted (ie. check if they have token)
-
-      }
-    }
-
-    // Stop loading
-    siteLoading = false;
   });
 </script>
 
 <main class="h-screen">
-  <!-- Error section -->
-  {#if errorOcurred}
-    <div class=" h-full flex">
-      <div class="m-auto">
-        An error occurred. Please check if your environment variables have been
-        populated correctly and redeploy the applcation.
-      </div>
-    </div>
-    <!-- Loading Section -->
-  {:else if siteLoading && !errorOcurred}
-    <div class=" h-full flex" style="    display: flex;
-    align-items: center;
-    justify-content: center;">
-      <div class="loader">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  {:else}
-  <Button {connection} />
+  <div class="background"></div>
+
     <!-- Menu Bar -->
     {#if HEADER_TITLE}
     <div class="nav">
@@ -155,8 +56,8 @@ let currentTab;
 
     <!-- Card -->
     <div
-      class="mx-auto bg-whitesmoke rounded-lg my-12  border-2"
-      transition:fade   style="background-color: black; max-width: 50rem"
+      class="mx-auto bg-whitesmoke rounded-lg my-12"
+      transition:fade   style="max-width: 75rem; position:relative"
     >
       <!-- Top Bar -->
       <Header />
@@ -164,36 +65,547 @@ let currentTab;
       <br />
       <!-- Main Body -->
       <div class="p-6">
+        <!-- Loading Animation with overlay
+        <div class="loading"> 
+          <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+        -->    
+        <div class="text-center" data-v-9aebbff6="">
+          <p class="mb-3" data-v-9aebbff6=""> 
+            Connect your wallet to get started staking your cocks : 
+          </p>
+          <div class="select-box">
+            <div class="select-box__current" tabindex="1">
+                <div class="select-box__value"><input class="select-box__input" type="radio" id="0" value="1" name="ROBOCOCK" checked="checked" />
+                    <p class="select-box__input-text">Choose Wallet</p>
+                </div>
+                <div class="select-box__value"><input class="select-box__input" type="radio" id="1" value="Phantom" name="ROBOCOCK" />
+                    <p class="select-box__input-text">Phantom</p>
+                </div>
+                <div class="select-box__value"><input class="select-box__input" type="radio" id="2" value="Sollet" name="ROBOCOCK" />
+                    <p class="select-box__input-text">Sollet</p>
+                </div>
+                <div class="select-box__value"><input class="select-box__input" type="radio" id="3" value="Sollet Extension" name="ROBOCOCK" />
+                    <p class="select-box__input-text">Sollet Extension</p>
+                </div>
+                <div class="select-box__value"><input class="select-box__input" type="radio" id="4" value="Solflare" name="ROBOCOCK" />
+                    <p class="select-box__input-text">Solflare</p>
+                </div>
+                <div class="select-box__value"><input class="select-box__input" type="radio" id="4" value="Solflare Web" name="ROBOCOCK" />
+                  <p class="select-box__input-text">Solflare Web</p>
+              </div>
+                
+                <img class="select-box__icon" src="http://cdn.onlinewebfonts.com/svg/img_295694.svg" alt="Arrow Icon" aria-hidden="true" />
+            </div>
+            <ul class="select-box__list">
+                <li><label class="select-box__option" for="1" aria-hidden="aria-hidden">Phantom</label></li>
+                <li><label class="select-box__option" for="2" aria-hidden="aria-hidden">Sollet</label></li>
+                <li><label class="select-box__option" for="3" aria-hidden="aria-hidden">Sollet Extension</label></li>
+                <li><label class="select-box__option" for="4" aria-hidden="aria-hidden">Solflare</label></li>
+                <li><label class="select-box__option" for="4" aria-hidden="aria-hidden">Solflare Web</label></li>
+            </ul>
+          </div>
+          <br><br>
+        <!-- NFT STAKING CONTENT -->
+        <Tabs bind:activeTabValue={currentTab} items={tabItems} />
 
-    
-        <div
-          class=" text-lg sm:text-2xl font-mono font-bold py-5 tracking-wider"
-        >
-          {TITLE}
+        <code class="language-text"></code>
+        <!-- Gen1 Content -->    
+        {#if 1 === currentTab}
+        <div class="flex justify-around mb-10" data-v-9aebbff6="">
+          <div class="box">
+              <div class="flex-col">
+                <p>Gen1 Cocks Staked</p>
+                <h1>3016</h1>
+              </div>
+          </div>
+          <div class="box">
+              <div class="flex-col">
+                <p>% Gen1 Cocks Staked</p>
+                <h1>78.58%</h1>
+              </div>
+          </div>
+
         </div>
-        <div class="text-sm sm:text-md font-semibold pb-5 text-gray-600 ">
-          {DESCRTIPTION}
+
+        <div class="flex justify-around mb-10" data-v-9aebbff6="">
+          <div class="box">
+            <div class="flex-col">
+              <p>FP Value of Gen1</p>
+              <h1>1.00 sol</h1>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="flex-col">
+              <p>Total Value of Gen1</p>
+              <h1>10.00 sol</h1>
+            </div>
+          </div>
         </div>
+            
+            <Tabs_g1 bind:activeTabValue={currentTab_g} items={tabItems_g} />
+
+            <!-- Gen1 Stake Content -->  
+            {#if 1 === currentTab_g}          
+            <div class=" text-lg sm:text-2xl font-mono font-bold py-5 tracking-wider">
+            {TITLE}
+            </div>
+            <div class="text-sm sm:text-md font-semibold pb-5 text-gray-600 ">
+              {DESCRTIPTION}
+            </div>
+            <h3>Gen1 unStaked content</h3>
+            <div class="flex flex-wrap space-evenly space-evenly">
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://www.arweave.net/DhPNIq6ws07sG5xVdR3c5DpdLpXDTlf0Jq0wKMkxteg?ext=png" alt="RC_2576" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+              
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center">
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+
+
+            </div>
+            {/if}
+             <!-- End Gen1 Stake Content -->   
+
+            <!-- Gen1 unStake Content -->  
+            {#if 2 === currentTab_g}          
+            <div class=" text-lg sm:text-2xl font-mono font-bold py-5 tracking-wider">
+            {TITLE}
+            </div>
+            <div class="text-sm sm:text-md font-semibold pb-5 text-gray-600 ">
+              {DESCRTIPTION}
+            </div>
+            <h3>Gen1 Staked content</h3>
+            <div class="flex flex-wrap space-evenly">
+              <div class="card flex flex-col p-1 justify-center" >
+                <p class="flex-1">
+                  <img src="https://www.arweave.net/DhPNIq6ws07sG5xVdR3c5DpdLpXDTlf0Jq0wKMkxteg?ext=png" alt="RC_2576" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button">Stake</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center" >
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button">Stake</button>
+                </div>
+              </div>
+            </div>
+            {/if}
+             <!-- End Gen1 unStake Content -->   
+
+
+        {/if}
+        <!-- End Gen1 Content -->   
+
+
+
+        <!-- Gen2 Content -->    
+        {#if 2 === currentTab}
+        <div class="flex justify-around mb-10" data-v-9aebbff6="">
+          <div class="box">
+              <div class="flex-col">
+                <p>Gen2 Cocks staked</p>
+                <h1>0</h1>
+              </div>
+          </div>
+          <div class="box">
+              <div class="flex-col">
+                <p>% Gen2 Cocks staked</p>
+                <h1>0%</h1>
+              </div>
+          </div>
+        </div>
+
+        <div class="flex justify-around mb-10" data-v-9aebbff6="">
+          <div class="box">
+            <div class="flex-col">
+              <p>FP Value of Gen2</p>
+              <h1>1.00 sol</h1>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="flex-col">
+              <p>Total Value of Gen2</p>
+              <h1>10.00 sol</h1>
+            </div>
+          </div>
+        </div>
+            
+            <Tabs_g1 bind:activeTabValue={currentTab_g} items={tabItems_g} />
+
+            <!-- Gen2 Stake Content -->  
+            {#if 1 === currentTab_g}          
+            <div class=" text-lg sm:text-2xl font-mono font-bold py-5 tracking-wider">
+            {TITLE}
+            </div>
+            <div class="text-sm sm:text-md font-semibold pb-5 text-gray-600 ">
+              {DESCRTIPTION}
+            </div>
+            <h3>Gen2 unStaked content</h3>
+            <div class="flex flex-wrap space-evenly">
+              <div class="card flex flex-col p-1 justify-center" >
+                <p class="flex-1">
+                  <img src="https://www.arweave.net/DhPNIq6ws07sG5xVdR3c5DpdLpXDTlf0Jq0wKMkxteg?ext=png" alt="RC_2576" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+
+              <div class="card flex flex-col p-1 justify-center" >
+                <p class="flex-1">
+                  <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                </p>
+                <div class="mt-2">
+                  <p style="text-align: left">
+                    RC_2576
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-2">
+                  <p style="text-align: left">
+                    RATE: 5 $RICE/DAY
+                  </p>
+                </div>
+
+                <div class="mt-2 mb-6" style="text-align: left">
+                  <button class="big-button2">unStaked</button>
+                </div>
+              </div>
+            </div>
+            {/if}
+             <!-- End Gen2 Stake Content -->   
+
+            <!-- Gen2 unStake Content -->  
+            {#if 2 === currentTab_g}          
+            <div class=" text-lg sm:text-2xl font-mono font-bold py-5 tracking-wider">
+              {TITLE}
+              </div>
+              <div class="text-sm sm:text-md font-semibold pb-5 text-gray-600 ">
+                {DESCRTIPTION}
+              </div>
+              <h3>Gen2 Stake content</h3>
+              <div class="flex flex-wrap space-evenly">
+                <div class="card flex flex-col p-1 justify-center" >
+                  <p class="flex-1">
+                    <img src="https://www.arweave.net/DhPNIq6ws07sG5xVdR3c5DpdLpXDTlf0Jq0wKMkxteg?ext=png" alt="RC_2576" data-v-3ca34397="">
+                  </p>
+                  <div class="mt-2">
+                    <p style="text-align: left">
+                      RC_2576
+                    </p>
+                  </div>
+  
+                  <div class="mt-2 mb-2">
+                    <p style="text-align: left">
+                      RATE: 5 $RICE/DAY
+                    </p>
+                  </div>
+  
+                  <div class="mt-2 mb-6" style="text-align: left">
+                    <button class="big-button">Stake</button>
+                  </div>
+                </div>
+  
+                <div class="card flex flex-col p-1 justify-center" >
+                  <p class="flex-1">
+                    <img src="https://arweave.net/h9ZLrzUCGmp05fRQUhKj9YzNf7FwUtxDeOPMi3Fd3lQ" alt="RC_462" data-v-3ca34397="">
+                  </p>
+                  <div class="mt-2">
+                    <p style="text-align: left">
+                      RC_2576
+                    </p>
+                  </div>
+  
+                  <div class="mt-2 mb-2">
+                    <p style="text-align: left">
+                      RATE: 5 $RICE/DAY
+                    </p>
+                  </div>
+  
+                  <div class="mt-2 mb-6" style="text-align: left">
+                    <button class="big-button">Stake</button>
+                  </div>
+                </div>
+
+              </div>
+            {/if}
+             <!-- End Gen2 unStake Content -->   
+
+
+        {/if}
+        <!-- End Gen2 Content -->   
         
-      <!-- NFT STAKING CONTENT -->
-      <Tabs bind:activeTabValue={currentTab} items={tabItems} />
-
-      <code class="language-text"></code>
-
-      {#if 1 === currentTab}
-      <h3>Tab 1 content</h3>
-      <p> test</p>
-      {/if}
-      
-      {#if 2 === currentTab}
-        <h3>Tab 2 content</h3>
-      {/if}
-      
-      {#if 3 === currentTab}
-        <h3>Tab 3 content</h3>
-      {/if} 
 
       </div>
     </div>
-  {/if}
-</main>
+  </main>
+
